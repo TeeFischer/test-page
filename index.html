@@ -2,18 +2,29 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>AR Montagespiel mit A-Frame</title>
+    <title>AR Start</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- A-Frame -->
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-    <!-- WebXR AR -->
-    <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
-    <!-- Interaction (super-hands) -->
-    <script src="https://unpkg.com/super-hands/dist/super-hands.min.js"></script>
-    <script src="https://unpkg.com/aframe-physics-system@4.0.1/dist/aframe-physics-system.min.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const btn = document.getElementById("enter-ar");
+        btn.addEventListener("click", async () => {
+          const scene = document.querySelector("a-scene");
+          try {
+            await scene.renderer.xr.setSession(await navigator.xr.requestSession("immersive-ar", {
+              requiredFeatures: ["hit-test"]
+            }));
+          } catch (e) {
+            alert("AR-Modus konnte nicht gestartet werden: " + e.message);
+          }
+        });
+      });
+    </script>
   </head>
 
   <body>
+    <button id="enter-ar" style="position: absolute; z-index: 10; top: 20px; left: 20px;">🔍 Enter AR</button>
+
     <a-scene
       renderer="colorManagement: true"
       vr-mode-ui="enabled: false"
@@ -24,13 +35,7 @@
       cursor="rayOrigin: mouse"
       raycaster="objects: .clickable"
     >
-
-      <!-- Kamera mit Hand-Tracking -->
-      <a-entity id="cameraRig">
-        <a-entity camera position="0 1.6 0" look-controls></a-entity>
-        <a-entity laser-controls="hand: right" raycaster="objects: .clickable" super-hands></a-entity>
-      </a-entity>
-
+      
       <!-- Boden -->
       <a-plane position="0 0 -2" rotation="-90 0 0" width="10" height="10" color="#ccc" static-body></a-plane>
 
