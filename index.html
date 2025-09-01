@@ -10,12 +10,17 @@
         const btn = document.getElementById("enter-ar");
         btn.addEventListener("click", async () => {
           const scene = document.querySelector("a-scene");
+    
           try {
-            await scene.renderer.xr.setSession(await navigator.xr.requestSession("immersive-ar", {
-              requiredFeatures: ["hit-test"]
-            }));
+            const session = await navigator.xr.requestSession("immersive-ar", {
+              requiredFeatures: ["hit-test"],
+              optionalFeatures: ["local-floor", "viewer"]
+            });
+    
+            await scene.renderer.xr.setSession(session);
           } catch (e) {
             alert("AR-Modus konnte nicht gestartet werden: " + e.message);
+            console.error(e);
           }
         });
       });
@@ -30,7 +35,7 @@
       vr-mode-ui="enabled: false"
       embedded
       arjs="sourceType: webcam; debugUIEnabled: false;"
-      webxr="optionalFeatures: hit-test; requiredFeatures: local-floor"
+      webxr="optionalFeatures: hit-test, local-floor, viewer"
       physics="gravity: -9.8;"
       cursor="rayOrigin: mouse"
       raycaster="objects: .clickable"
