@@ -1,136 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Immersive AR Demo</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <link rel="icon" href="favicon.ico">
+  <meta name="viewport" content="width=device-width, user-scalable=no">
 
-  <!-- WebXR Button Styles (optional) -->
-  <style>
-    body {
-      margin: 0;
-      font-family: sans-serif;
-      background: #111;
-      color: #fff;
-    }
+  <title>Made with Needle</title>
+  
+  <meta property="og:title" content="Made with Needle" />
+  <meta name="description" content="🌵 Made with Needle Engine">
+  <meta property="og:description" content="🌵 Made with Needle Engine" />
+  
+  <meta name="robots" content="index,follow">
+  <meta name="url" content="https://needle.tools">
 
-    header {
-      padding: 1em;
-      background: #222;
-    }
-
-    details summary {
-      font-size: 1.2em;
-      cursor: pointer;
-    }
-
-    canvas {
-      display: block;
-    }
-
-    .webxr-button {
-      margin-top: 1em;
-      padding: 1em 2em;
-      font-size: 1em;
-      background: #00c2ff;
-      border: none;
-      cursor: pointer;
-    }
-
-    .webxr-button[disabled] {
-      background: #888;
-      cursor: not-allowed;
-    }
-  </style>
+  <link rel="stylesheet" href="./src/styles/style.css">
 </head>
+
 <body>
-  <header>
-    <details open>
-      <summary>Immersive AR Session</summary>
-      <p>
-        Diese AR-Demo basiert auf der WebXR-Sample-Seite.<br>
-        <a href="./">Zurück</a>
-      </p>
-    </details>
-    <button id="xr-button" class="webxr-button" disabled>AR NOT FOUND</button>
-  </header>
-
-  <canvas id="xr-canvas"></canvas>
-
-  <!-- WebXR Polyfill und AR Code -->
-  <script type="module">
-    import WebXRPolyfill from 'https://unpkg.com/webxr-polyfill@latest/build/webxr-polyfill.module.js';
-
-    new WebXRPolyfill();
-
-    let xrSession = null;
-    let gl = null;
-    let xrRefSpace = null;
-    let xrButton = document.getElementById('xr-button');
-    const canvas = document.getElementById('xr-canvas');
-
-    // Create WebGL context
-    function initGL() {
-      if (gl) return;
-      gl = canvas.getContext('webgl', { xrCompatible: true });
-    }
-
-    // Resize canvas to fullscreen
-    function resizeCanvas() {
-      canvas.width = window.innerWidth * window.devicePixelRatio;
-      canvas.height = window.innerHeight * window.devicePixelRatio;
-    }
-
-    window.addEventListener('resize', resizeCanvas);
-
-    // Check XR support
-    if (navigator.xr) {
-      navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
-        if (supported) {
-          xrButton.disabled = false;
-          xrButton.textContent = "START AR";
-          xrButton.addEventListener('click', onRequestSession);
-        }
-      });
-    }
-
-    function onRequestSession() {
-      navigator.xr.requestSession('immersive-ar', {
-        requiredFeatures: ['local']
-      }).then((session) => {
-        xrSession = session;
-        initGL();
-        session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
-
-        session.requestReferenceSpace('local').then((refSpace) => {
-          xrRefSpace = refSpace;
-          session.requestAnimationFrame(onXRFrame);
-        });
-
-        session.addEventListener('end', onSessionEnded);
-      });
-    }
-
-    function onSessionEnded() {
-      xrSession = null;
-      xrButton.textContent = "START AR";
-    }
-
-    function onXRFrame(time, frame) {
-      const session = frame.session;
-      session.requestAnimationFrame(onXRFrame);
-
-      const pose = frame.getViewerPose(xrRefSpace);
-      if (!pose) return;
-
-      gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
-      gl.clearColor(0, 0, 0, 0);
-      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-      // Custom rendering here (e.g., draw models or shapes)
-    }
-
-    resizeCanvas();
-  </script>
+  <script type="module" src="./src/generated/gen.js"></script>
+  <script type="module" src="./src/main.ts"></script>
+  <needle-engine></needle-engine>
 </body>
 </html>
